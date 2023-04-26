@@ -8,7 +8,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -31,6 +30,14 @@ public class Account {
 
     @OneToMany(mappedBy = "reciever", cascade = CascadeType.ALL)
     private List<Transaction> recievedTransactions = new ArrayList<>();
+
+    public Account( String name, boolean isCompany) {
+        this.name = name;
+        this.isCompany = isCompany;
+    }
+
+    public Account() {
+    }
 
     public Long getId() {
         return id;

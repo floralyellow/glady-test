@@ -1,12 +1,13 @@
 package com.glady.backend.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.glady.backend.entities.BalanceResponse;
+import com.glady.backend.entities.TransactionTypeEnum;
 import com.glady.backend.services.TransactionService;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -15,15 +16,18 @@ public class TransactionController {
     @Autowired
     private TransactionService transactionService;
 
-    @RequestMapping(value = {"/get-balance"}, method = RequestMethod.POST)
-    public void getBalance(@RequestBody Long userId) {
-        this.transactionService.mealTransactionList(userId);
-        
+    @RequestMapping(value = {"/get-balance"}, method = RequestMethod.POST, consumes="application/json")
+    public ResponseEntity<?> getBalance(@RequestBody Long userId) {
+        Optional<BalanceResponse> test = this.transactionService.getTotalBalanceByUserId(userId);
+        if (test.isPresent()){
+            return ResponseEntity.ok(test.get());
+        }
+        return ResponseEntity.badRequest().body("The given id is not a valid user id !");
     }
 
-    @RequestMapping(value = {"/send-money-to-account"}, method = RequestMethod.POST)
-    public Optional<String> getMoviesAndActors(@RequestBody Long userId) {
-        return Optional.of("Hello World");
+    @RequestMapping(value = {"/send-money-to-account"}, method = RequestMethod.POST, consumes="application/json")
+    public ResponseEntity<?> sendMoneyToAccount(@RequestBody Long userId, @RequestBody  Long companyId, @RequestBody TransactionTypeEnum type, @RequestBody int amount) {
+        return this.transactionService.transfertMoneyFromCompanyToUserAccount(userId, companyId, type, amount);
     }
 
 

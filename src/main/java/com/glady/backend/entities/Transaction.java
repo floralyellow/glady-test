@@ -35,17 +35,33 @@ public class Transaction implements Serializable {
     private LocalDateTime expirationDate;
 
     @ManyToOne
-    @JoinColumn(name ="emiter_id", nullable = false)
+    @JoinColumn(name ="emiter_id", nullable = true)
     private Account emiter;
 
     @ManyToOne
     @JoinColumn(name ="reciever_id", nullable = false)
     private Account reciever;
-    Transaction(){
-        
+
+    public Transaction(TransactionTypeEnum transactionType, Account reciever,int transactionAmount){
+        if(transactionType == TransactionTypeEnum.personnalAccount)
+        {    
+            this.transactionType = transactionType;
+            this.reciever = reciever;
+            this.transactionAmount = transactionAmount;
+            this.transactionDate = LocalDateTime.now();
+            if(transactionType == TransactionTypeEnum.gift) {
+                this.expirationDate = this.transactionDate.plusYears(1);
+            }
+            else if(transactionType == TransactionTypeEnum.meal) {
+                this.expirationDate = LocalDateTime.now().withMonth(2).plusYears(1);
+            }
+        }
+        else{
+            System.out.println("This initializer is only to refill company account !");
+        }
     }
 
-    Transaction(TransactionTypeEnum transactionType, Account emiter, Account reciever,int transactionAmount){
+    public Transaction(TransactionTypeEnum transactionType, Account emiter, Account reciever,int transactionAmount){
         this.transactionType = transactionType;
         this.emiter = emiter;
         this.reciever = reciever;
@@ -57,6 +73,8 @@ public class Transaction implements Serializable {
         else if(transactionType == TransactionTypeEnum.meal) {
             this.expirationDate = LocalDateTime.now().withMonth(2).plusYears(1);
         }
+    }
+    public Transaction(){
     }
     public Long getId() {
         return id;
